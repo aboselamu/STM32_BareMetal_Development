@@ -120,3 +120,34 @@ This project demonstrates practical understanding of:
 - Expand driver library (SPI, I2C)
 - Add sensor integration projects
 - Implement RTOS version for comparison
+
+My_STM32_Project/
+│
+├── App/                            <-- 1. THE LOGIC (What the product does)
+│   ├── inc/
+│   └── src/
+│       ├── main.c                  (Main loop, handle configurations)
+│       └── security.c              (Example: Separated app logic/callbacks)
+│
+├── System/                         <-- 2. THE SWITCHBOARD (Interrupt routing)
+│   ├── inc/
+│   │   └── stm32_it.h              (IRQ handler prototypes)
+│   └── src/
+│       └── stm32_it.c              (Hardware IRQs that map directly to driver functions)
+│
+├── Board/                          <-- 3. THE PLUMBING (Clocks, Pins, NVIC)
+│   ├── inc/
+│   │   └── board.h                 
+│   └── src/
+│       └── board.c                 (MspInit functions: RCC, GPIO Alternate Functions, NVIC)
+│
+├── Drivers/                        <-- 4. THE MECHANICS (Pure register manipulation)
+│   ├── inc/
+│   │   ├── usart_driver.h
+│   │   ├── exti_driver.h
+│   │   └── spi_driver.h            (Cleaned up: Contains Handle, Config, and API)
+│   └── src/
+│       ├── usart_driver.c
+│       ├── exti_driver.c
+│       └── spi_driver.c            (Cleaned up: Only state machines and DR/SR/CR registers)
+│
