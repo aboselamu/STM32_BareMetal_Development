@@ -19,15 +19,19 @@ void USART_MspInit(USART_Handle_t *pHandle) {
     }
 }
 
+// for pwm port pin and mapping configuration 
 void PWM_MspInit(PWM_HandleTypeDef *hpwm) {
     if (hpwm->Instance == TIM2) {
-        RCC->APB1ENR |= RCC_APB1ENR_TIM2EN; // Clock[cite: 14]
-        RCC->AHB1ENR |= RCC_AHB1ENR_GPIOAEN;
+        RCC->APB1ENR |= RCC_APB1ENR_TIM2EN; // Enable TIM2 Clock
+        RCC->AHB1ENR |= RCC_AHB1ENR_GPIOAEN; // Enable GPIOA Clock
 
-        // PA0 -> AF1[cite: 14]
-        GPIOA->MODER &= ~(3 << (0 * 2));
-        GPIOA->MODER |=  (2 << (0 * 2));
-        GPIOA->AFR[0] |= (1 << (0 * 4));
+        // Configure PA5 -> Alternate Function 1 (TIM2_CH1)
+        GPIOA->MODER &= ~(3U << (5 * 2)); // Clear bits for Pin 5
+        GPIOA->MODER |=  (2U << (5 * 2)); // Set to Alternate Function
+        
+        // AFR[0] handles pins 0-7. Pin 5 uses bits 23:20.
+        GPIOA->AFR[0] &= ~(0xFU << (5 * 4)); 
+        GPIOA->AFR[0] |=  (1U << (5 * 4));   // Set AF1 (TIM2)
     }
 }
 
