@@ -5,7 +5,7 @@ This project is a custom-built **bare-metal firmware framework** for STM32F4 mic
 
 It demonstrates low-level embedded systems design, including:
 - Interrupt-driven firmware architecture
-- Peripheral driver development (USART, PWM, EXTI)
+- Peripheral driver development (USART, PWM, EXTI, SPI)
 - Real-time hardware control
 - Modular firmware structure (drivers + applications separation)
 
