@@ -1,42 +1,60 @@
-#include "board.h"
-#include "usart_driver.h"
-#include "pwm_driver.h"
+#include "board.h"        // The "Plumbing" contract
+#include "usart_driver.h"  // The "Logic" contract
 
-// 1. Global Handles (Live for the life of the app)
-USART_Handle_t dimUsartHandle;
-PWM_HandleTypeDef dimPwmHandle;
-uint8_t rx_char; 
+/* 1. GLOBAL HANDLES & BUFFERS */
+USART_Handle_t myUsart2Handle;
+uint8_t rxBuffer[10]; // Small buffer for incoming data
 
-// 2. The "Brain" (The Callback)
-void App_USART_Callback(uint8_t event) {
+/* 2. THE APPLICATION CALLBACK */
+/**
+ * @brief This is your logic "Hook."
+ * When the driver finishes a hardware task, it calls this function.
+ */
+void My_USART_Callback(uint8_t event) {
     if (event == USART_EVENT_RX_CMPLT) {
-        if (rx_char >= '0' && rx_char <= '4') {
-            uint32_t duty = ((rx_char - '0') * dimPwmHandle.Config.period) / 4;
-            PWM_SetDuty(&dimPwmHandle, duty); // Generic API call
-        }
-        // Tell driver to wait for the next byte[cite: 1, 9]
-        USART_ReceiveData_IT(&dimUsartHandle, &rx_char, 1);
+        // APPLICATION LOGIC: Echo the data back to the PC
+        // We use the driver API to send, staying decoupled from registers.
+        USART_SendData_IT(&myUsart2Handle, rxBuffer, 10);[cite: 1, 3]
+        
+        // Re-enable reception to wait for the next 10 bytes
+        USART_ReceiveData_IT(&myUsart2Handle, rxBuffer, 10);[cite: 3]
+    }
+
+    if (event == USART_EVENT_TX_CMPLT) {
+        // Logic for when transmission finishes (e.g., toggle an LED)
+    }
+
+    if (event == USART_EVENT_ERROR) {
+        // Handle communication errors (Overrun, Noise, etc.)
     }
 }
 
+/* 3. MAIN APPLICATION */
 int main(void) {
-    // PWM Configuration[cite: 5, 8]
-    dimPwmHandle.Instance = TIM2;
-    dimPwmHandle.channel  = 1;
-    dimPwmHandle.Config.prescaler = 15; 
-    dimPwmHandle.Config.period    = 999;
-    PWM_Init(&dimPwmHandle);
+    /* --- STEP A: CONFIGURATION --- */
+    // We define "What" we want, but not "How" the hardware is wired.
+    myUsart2Handle.pUSARTx = USART2;
+    myUsart2Handle.USART_Config.BaudRate = 0x0683; // 9600 @ 16MHz
+    myUsart2Handle.USART_Config.StopBits = 0;      // 1 Stop Bit
+    myUsart2Handle.USART_Config.WordLength = 0;    // 8-bit Data[cite: 4]
+    myUsart2Handle.USART_Config.Mode = 3;           // RX and TX enabled
+    
+    // Register the callback "phone number"[cite: 4]
+    myUsart2Handle.pApplicationCallback = My_USART_Callback;
 
-    // USART Configuration
-    dimUsartHandle.pUSARTx = USART2;
-    dimUsartHandle.USART_Config.BaudRate = 0x0683; // 9600
-    dimUsartHandle.pCallback = App_USART_Callback;
-    USART_Init(&dimUsartHandle);
+    /* --- STEP B: INITIALIZATION --- */
+    /** 
+     * This call triggers the Driver -> Board (MSP) handshake.
+     * The driver calls USART_MspInit() inside board.c to setup pins.
+     */
+    USART_Init(&myUsart2Handle);[cite: 1, 3]
 
-    // Start listening
-    USART_ReceiveData_IT(&dimUsartHandle, &rx_char, 1);
+    /* --- STEP C: START THE ENGINE --- */
+    // Non-blocking start: The CPU stays free for other tasks
+    USART_ReceiveData_IT(&myUsart2Handle, rxBuffer, 10);[cite: 3]
 
-    while (1) {
-        // App is purely interrupt driven; main loop is free!
+    while(1) {
+        // The main loop is empty because the system is Event-Driven.
+        // You could put low-priority background tasks here.
     }
 }
