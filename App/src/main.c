@@ -14,13 +14,13 @@ void App_USART_Callback(uint8_t event) {
             uint32_t duty = ((rx_char - '0') * dimPwmHandle.Config.period) / 4;
             PWM_SetDuty(&dimPwmHandle, duty); // Generic API call
         }
-        // Tell driver to wait for the next byte[cite: 1, 9]
+        // Tell driver to wait for the next byte
         USART_ReceiveData_IT(&dimUsartHandle, &rx_char, 1);
     }
 }
 
 int main(void) {
-    // PWM Configuration[cite: 5, 8]
+    // PWM Configuration
     dimPwmHandle.Instance = TIM2;
     dimPwmHandle.channel  = 1;
     dimPwmHandle.Config.prescaler = 15; 
