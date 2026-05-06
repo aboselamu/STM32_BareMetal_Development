@@ -1,6 +1,6 @@
 #include "spi_driver.h"
 
-/* Static internal helpers (No spi_private.h needed!) */[cite: 12]
+/* Static internal helpers (No spi_private.h needed!) 
 static void SPI_TXE_Handler(SPI_Handle_t *hspi);
 static void SPI_RXNE_Handler(SPI_Handle_t *hspi);
 static void SPI_CloseTransfer(SPI_Handle_t *hspi);
@@ -21,12 +21,12 @@ void SPI_Init(SPI_Handle_t *hspi) {
     temp |= (hspi->Config.cpol << SPI_CR1_CPOL_Pos);
     temp |= (hspi->Config.cpha << SPI_CR1_CPHA_Pos);
     temp |= (hspi->Config.data_size << SPI_CR1_DFF_Pos);
-    temp |= (hspi->Config.nss << SPI_CR1_SSM_Pos);[cite: 10]
+    temp |= (hspi->Config.nss << SPI_CR1_SSM_Pos);
 
     hspi->Instance->CR1 = temp;
 
     /* 3. Enable SPI */
-    hspi->Instance->CR1 |= SPI_CR1_SPE;[cite: 10]
+    hspi->Instance->CR1 |= SPI_CR1_SPE;
     hspi->State = SPI_READY;
 }
 
@@ -41,8 +41,8 @@ uint8_t SPI_Transfer_IT(SPI_Handle_t *hspi, uint8_t *tx, uint8_t *rx, uint32_t l
     hspi->TxCount = 0;
     hspi->RxCount = 0;
 
-    /* Enable interrupts */
-    hspi->Instance->CR2 |= (SPI_CR2_TXEIE | SPI_CR2_RXNEIE | SPI_CR2_ERRIE);[cite: 10]
+    // Enable interrupts 
+    hspi->Instance->CR2 |= (SPI_CR2_TXEIE | SPI_CR2_RXNEIE | SPI_CR2_ERRIE);
     return 1;
 }
 
@@ -65,7 +65,7 @@ void SPI_IRQHandling(SPI_Handle_t *hspi) {
         if (hspi->ErrorCallback) hspi->ErrorCallback(hspi);
         SPI_CloseTransfer(hspi);
     }
-}[cite: 10]
+}
 
-/* ... Keep your existing SPI_TXE_Handler, SPI_RXNE_Handler, 
+/* add later SPI_TXE_Handler, SPI_RXNE_Handler, 
    SPI_CloseTransfer, and SPI_ClearOVR exactly as you wrote them ... */
