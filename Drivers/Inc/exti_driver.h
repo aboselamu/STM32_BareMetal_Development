@@ -11,9 +11,9 @@
 
 typedef struct {
     uint8_t line;           // 0..15[cite: 11]
-    uint8_t trigger;        // Rising, Falling, or Both[cite: 11]
-    GPIO_TypeDef *pPort;    // GPIOA, GPIOB, etc.[cite: 11]
-    void (*pApplicationCallback)(uint8_t line); // The Hook[cite: 10]
+    uint8_t trigger;        // Rising, Falling, or Both
+    GPIO_TypeDef *pPort;    // GPIOA, GPIOB, etc.
+    void (*pApplicationCallback)(uint8_t line); // The Hook
 } EXTI_Handle_t;
 
 /* API */
