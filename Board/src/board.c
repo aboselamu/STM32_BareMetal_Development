@@ -15,19 +15,23 @@ void USART_MspInit(USART_Handle_t *pHandle) {
         GPIOA->MODER |=  ((2 << (2 * 2)) | (2 << (3 * 2)));
         GPIOA->AFR[0] |= ((7 << (2 * 4)) | (7 << (3 * 4)));
 
-        NVIC_EnableIRQ(USART2_IRQn); // Switchboard Enable[cite: 14]
+        NVIC_EnableIRQ(USART2_IRQn); // Switchboard Enable
     }
 }
 
+// for pwm port pin and mapping configuration 
 void PWM_MspInit(PWM_HandleTypeDef *hpwm) {
     if (hpwm->Instance == TIM2) {
-        RCC->APB1ENR |= RCC_APB1ENR_TIM2EN; // Clock[cite: 14]
-        RCC->AHB1ENR |= RCC_AHB1ENR_GPIOAEN;
+        RCC->APB1ENR |= RCC_APB1ENR_TIM2EN; // Enable TIM2 Clock
+        RCC->AHB1ENR |= RCC_AHB1ENR_GPIOAEN; // Enable GPIOA Clock
 
-        // PA0 -> AF1[cite: 14]
-        GPIOA->MODER &= ~(3 << (0 * 2));
-        GPIOA->MODER |=  (2 << (0 * 2));
-        GPIOA->AFR[0] |= (1 << (0 * 4));
+        // Configure PA5 -> Alternate Function 1 (TIM2_CH1)
+        GPIOA->MODER &= ~(3U << (5 * 2)); // Clear bits for Pin 5
+        GPIOA->MODER |=  (2U << (5 * 2)); // Set to Alternate Function
+        
+        // AFR[0] handles pins 0-7. Pin 5 uses bits 23:20.
+        GPIOA->AFR[0] &= ~(0xFU << (5 * 4)); 
+        GPIOA->AFR[0] |=  (1U << (5 * 4));   // Set AF1 (TIM2)
     }
 }
 
@@ -35,12 +39,12 @@ void PWM_MspInit(PWM_HandleTypeDef *hpwm) {
 //// for exti
 
 void EXTI_MspInit(EXTI_Handle_t *pHandle) {
-    // 1. Enable SYSCFG Clock (Required for mapping pins to lines)[cite: 10]
+    // 1. Enable SYSCFG Clock (Required for mapping pins to lines)
     RCC->APB2ENR |= RCC_APB2ENR_SYSCFGEN;
 
     // 2. Configure the GPIO Pin as Input
     if (pHandle->pPort == GPIOA) {
-        RCC->AHB1ENR |= RCC_AHB1ENR_GPIOAEN;[cite: 12]
+        RCC->AHB1ENR |= RCC_AHB1ENR_GPIOAEN;
         
         // Set as Input (00), Pull-Up (01)[cite: 12]
         pHandle->pPort->MODER &= ~(3U << (pHandle->line * 2));
@@ -48,7 +52,7 @@ void EXTI_MspInit(EXTI_Handle_t *pHandle) {
         pHandle->pPort->PUPDR |=  (1U << (pHandle->line * 2));
     }
 
-    // 3. Enable NVIC IRQ for the specific line[cite: 10]
+    // 3. Enable NVIC IRQ for the specific line
     if (pHandle->line <= 4) {
         NVIC_EnableIRQ(EXTI0_IRQn + pHandle->line); 
     }

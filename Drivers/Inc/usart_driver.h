@@ -1,7 +1,7 @@
 #ifndef USART_DRIVER_H
 #define USART_DRIVER_H
 
-#include "stm32f4xx.h" // Standard CMSIS header for STM32F4 series
+#include "stm32f4xx.h" 
 
 /* @ref USART_Event_Definitions */
 #define USART_EVENT_TX_CMPLT  0
@@ -32,7 +32,7 @@ typedef struct {
     uint8_t        *pRxBuffer;
     uint32_t        TxLen;
     uint32_t        RxLen;
-    volatile uint8_t TxState;     // volatile is mandatory for ISR variables[cite: 4]
+    volatile uint8_t TxState;     // volatile is mandatory for ISR variables
     volatile uint8_t RxState;
     void (*pApplicationCallback)(uint8_t event); 
 } USART_Handle_t;

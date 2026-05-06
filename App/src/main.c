@@ -26,6 +26,12 @@ uint8_t rxBuffer[10]; // Small buffer for incoming data
  */
 void My_USART_Callback(uint8_t event) {
     if (event == USART_EVENT_RX_CMPLT) {
+        if (rx_char >= '0' && rx_char <= '4') {
+            uint32_t duty = ((rx_char - '0') * dimPwmHandle.Config.period) / 4;
+            PWM_SetDuty(&dimPwmHandle, duty); // Generic API call
+        }
+        // Tell driver to wait for the next byte
+        USART_ReceiveData_IT(&dimUsartHandle, &rx_char, 1);
         // APPLICATION LOGIC: Echo the data back to the PC
         // We use the driver API to send, staying decoupled from registers.
         USART_SendData_IT(&myUsart2Handle, rxBuffer, 10);
