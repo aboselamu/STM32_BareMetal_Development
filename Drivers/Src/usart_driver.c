@@ -1,6 +1,6 @@
 #include "usart_driver.h"
 
-/* Weak implementation allows the user to override this without compiler errors */
+// This implementation allows the user to override this without compiler errors 
 __weak void USART_MspInit(USART_Handle_t *pHandle) {
     (void)pHandle; // Default empty implementation
 }
@@ -68,7 +68,7 @@ void USART_IRQHandling(USART_Handle_t *pHandle) {
         }
     }
 
-    // Handle TC (Transmission Complete - physical line is clear)[cite: 1]
+    // Handle TC (Transmission Complete - physical line is clear)
     if((sr & USART_SR_TC) && (cr1 & USART_CR1_TCIE)) {
         pHandle->pUSARTx->CR1 &= ~USART_CR1_TCIE;
         pHandle->TxState = USART_READY;
