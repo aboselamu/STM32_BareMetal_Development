@@ -13,7 +13,7 @@ extern USART_Handle_t myUsart2Handle;
 extern USART_Handle_t dimUsartHandle; // Declared in main.c
 
 void USART2_IRQHandler(void) {
-    // Hand off to the Generic Driver[cite: 2]
+    // Hand off to the Generic Driver
     USART_IRQHandling(&dimUsartHandle);
 }
 
@@ -29,7 +29,7 @@ void SPI1_IRQHandler(void) {
 
 void USART1_IRQHandler(void) {
     // Routes traffic for the first USART
-    USART_IRQHandling(&myUsart1Handle);[cite: 2]
+    USART_IRQHandling(&myUsart1Handle);
 }
 
 
