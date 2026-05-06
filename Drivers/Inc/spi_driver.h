@@ -23,7 +23,7 @@ typedef struct {
 } SPI_Config_t;
 
 typedef struct SPI_Handle_s {
-    SPI_TypeDef *Instance;   /* Register base address (e.g., SPI1) */[cite: 11]
+    SPI_TypeDef *Instance;   /* Register base address (e.g., SPI1) 
     SPI_Config_t Config;
     uint8_t *pTxBuffer;
     uint8_t *pRxBuffer;
@@ -34,13 +34,13 @@ typedef struct SPI_Handle_s {
     SPI_State_t State;
 
     /* Callbacks */
-    void (*TxRxCpltCallback)(struct SPI_Handle_s *hspi);[cite: 11]
-    void (*ErrorCallback)(struct SPI_Handle_s *hspi);  [cite: 11]
+    void (*TxRxCpltCallback)(struct SPI_Handle_s *hspi);
+    void (*ErrorCallback)(struct SPI_Handle_s *hspi);  
 } SPI_Handle_t;
 
 /* ================= API ================= */
 void SPI_Init(SPI_Handle_t *hspi);
-uint8_t SPI_Transfer_IT(SPI_Handle_t *hspi, uint8_t *tx, uint8_t *rx, uint32_t len);[cite: 11]
+uint8_t SPI_Transfer_IT(SPI_Handle_t *hspi, uint8_t *tx, uint8_t *rx, uint32_t len);
 void SPI_IRQHandling(SPI_Handle_t *hspi);
 
 /* MSP Hook - To be implemented in board.c */
